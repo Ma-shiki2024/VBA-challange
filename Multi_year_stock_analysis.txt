@@ -1,0 +1,221 @@
+Sub Multiyear_stock_analysis_again()
+
+    Dim i As Double
+    Dim ws As Worksheet
+
+    For Each ws In Worksheets
+
+        Dim WorksheetName As String
+        Dim LastRow As Long
+        
+        Dim PrevTickerName As String
+        Dim TotalStockVolume As Double
+        Dim openValue As Double
+        Dim closedValue As Double
+        
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+
+        ' Grab the WorksheetName
+        WorksheetName = ws.Name
+
+        'create columns I thru L
+        
+        ws.Range("I:I").EntireColumn.Insert
+        ws.Cells(1, 9).Value = "Ticker"
+
+        ws.Range("J:J").EntireColumn.Insert
+        ws.Cells(1, 10).Value = "Quarterly change"
+               
+        ws.Range("K:K").EntireColumn.Insert
+        ws.Cells(1, 11).Value = "Percent change"
+        
+        ws.Range("L:L").EntireColumn.Insert
+        ws.Cells(1, 12).Value = "Total Stock Volume"
+        
+         'create columns R thru T
+        
+        ws.Range("R1").EntireColumn.Insert
+        ws.Cells(3, 18).Value = "greatest % increase"
+        ws.Cells(4, 18).Value = "greatest % decrease"
+        ws.Cells(5, 18).Value = "greatest total volume"
+        
+        ws.Range("S1").EntireColumn.Insert
+        ws.Cells(2, 19).Value = "Ticker"
+        
+        ws.Range("T1").EntireColumn.Insert
+        ws.Cells(2, 20).Value = "Value"
+        
+        PrevTickerName = ws.Cells(2, 1).Value
+        
+        Dim start_date As String
+        start_date = ws.Cells(2, 2).Value
+        
+        Dim last_date As String
+        last_date = ws.Cells(LastRow, 2).Value
+        
+        
+       
+        TotalStockVolume = 0
+        
+        Dim quarterChange As Double
+        Dim percentChange As Double
+        
+        Dim j As Double
+        
+        j = 2
+        
+        For i = 2 To LastRow
+        
+            If (ws.Cells(i, 1).Value = PrevTickerName) Then
+            
+                TotalStockVolume = TotalStockVolume + ws.Cells(i, 7)
+                If (ws.Cells(i, 2).Value = start_date) Then
+            
+                    openValue = ws.Cells(i, 3).Value
+                
+            
+                End If
+                
+                If (ws.Cells(i, 2) = last_date) Then
+                
+                    closedValue = ws.Cells(i, 6).Value
+                
+                End If
+                
+            Else
+            
+                quarterChange = closedValue - openValue
+                percentChange = quarterChange / openValue
+                        
+                ws.Cells(j, 9).Value = PrevTickerName
+                
+                ws.Cells(j, 10).Value = quarterChange
+                
+                ws.Cells(j, 11).Value = percentChange
+                
+                ws.Cells(j, 12).Value = TotalStockVolume
+                
+                j = j + 1
+                
+                PrevTickerName = ws.Cells(i, 1).Value
+                TotalStockVolume = 0
+                quarterChange = 0
+                percentChange = 0
+                If (ws.Cells(i, 2).Value = start_date) Then
+            
+                    openValue = ws.Cells(i, 3).Value
+                End If
+                
+            End If
+        
+        Next i
+        
+            quarterChange = closedValue - openValue
+            percentChange = quarterChange / openValue
+                    
+            ws.Cells(j, 9).Value = PrevTickerName
+            
+            ws.Cells(j, 10).Value = quarterChange
+            
+            ws.Cells(j, 11).Value = percentChange
+            
+            ws.Cells(j, 12).Value = TotalStockVolume
+            
+            ws.Range("K:K").NumberFormat = "0.00%"
+            
+            Set QuarterRange = ws.Range("J:J")
+            
+            
+            QuarterRange.FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, _
+                Formula1:="=0"
+            QuarterRange.FormatConditions(QuarterRange.FormatConditions.Count).SetFirstPriority
+            With QuarterRange.FormatConditions(1).Font
+                .Color = -16752384
+                .TintAndShade = 0
+            End With
+            With QuarterRange.FormatConditions(1).Interior
+                .PatternColorIndex = xlAutomatic
+                .Color = 13561798
+                .TintAndShade = 0
+            End With
+            QuarterRange.FormatConditions(1).StopIfTrue = False
+            QuarterRange.FormatConditions.Add Type:=xlCellValue, Operator:=xlLess, _
+                Formula1:="=0"
+            QuarterRange.FormatConditions(QuarterRange.FormatConditions.Count).SetFirstPriority
+            With QuarterRange.FormatConditions(1).Font
+                .Color = -16383844
+                .TintAndShade = 0
+            End With
+            With QuarterRange.FormatConditions(1).Interior
+                .PatternColorIndex = xlAutomatic
+                .Color = 13551615
+                .TintAndShade = 0
+            End With
+            QuarterRange.FormatConditions(1).StopIfTrue = False
+            
+            
+            Set percentRange = ws.Range("K:K")
+               
+            
+            percentRange.FormatConditions.Add Type:=xlCellValue, Operator:=xlGreater, _
+                Formula1:="=0"
+            percentRange.FormatConditions(percentRange.FormatConditions.Count).SetFirstPriority
+            With percentRange.FormatConditions(1).Font
+                .Color = -16752384
+                .TintAndShade = 0
+            End With
+            With percentRange.FormatConditions(1).Interior
+                .PatternColorIndex = xlAutomatic
+                .Color = 13561798
+                .TintAndShade = 0
+            End With
+            percentRange.FormatConditions(1).StopIfTrue = False
+            percentRange.FormatConditions.Add Type:=xlCellValue, Operator:=xlLess, _
+                Formula1:="=0"
+            percentRange.FormatConditions(percentRange.FormatConditions.Count).SetFirstPriority
+            With percentRange.FormatConditions(1).Font
+                .Color = -16383844
+                .TintAndShade = 0
+            End With
+            With percentRange.FormatConditions(1).Interior
+                .PatternColorIndex = xlAutomatic
+                .Color = 13551615
+                .TintAndShade = 0
+            End With
+            percentRange.FormatConditions(1).StopIfTrue = False
+            
+            
+            
+            Set percentChangeRange = ws.Range("K:K")
+            Set volumeRange = ws.Range("L:L")
+            
+            
+            
+            MaxVal = WorksheetFunction.Max(percentChangeRange)
+            MaxRow = WorksheetFunction.Match(MaxVal, percentChangeRange, 0) + percentChangeRange.Row - 1
+            
+            
+            MinVal = WorksheetFunction.Min(percentChangeRange)
+            MinRow = WorksheetFunction.Match(MinVal, percentChangeRange, 0) + percentChangeRange.Row - 1
+            
+            VolMaxVal = WorksheetFunction.Max(volumeRange)
+            VolRow = WorksheetFunction.Match(VolMaxVal, volumeRange, 0) + volumeRange.Row - 1
+            
+            
+            ws.Range("T3").Value = MaxVal
+            ws.Range("T4").Value = MinVal
+            ws.Range("T5").Value = VolMaxVal
+            
+            ws.Range("S3").Value = ws.Cells(MaxRow, 9)
+            ws.Range("S4").Value = ws.Cells(MinRow, 9)
+            ws.Range("S5").Value = ws.Cells(VolRow, 9)
+            
+            
+                    
+            
+            
+    Next ws
+
+
+End Sub
+
